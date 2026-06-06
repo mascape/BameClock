@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+/>
+
+<title>GameTime ご利用前に</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#111111">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GameClock">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<style>
+:root{
+  --bg:#111111;
+  --panel:#181818;
+  --panel-border:#333333;
+  --text:#ffffff;
+  --muted:#bbbbbb;
+  --button:#ffffff;
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  margin:0;
+  width:100%;
+  min-height:100%;
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-family:
+    "Arial Rounded MT Bold",
+    "Hiragino Maru Gothic ProN",
+    "Rounded Mplus 1c",
+    "Yu Gothic UI",
+    "Meiryo",
+    sans-serif;
+
+  font-weight:700;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+body{
+  padding:
+    max(20px, env(safe-area-inset-top))
+    max(18px, env(safe-area-inset-right))
+    max(20px, env(safe-area-inset-bottom))
+    max(18px, env(safe-area-inset-left));
+}
+
+.page{
+  width:100%;
+  max-width:720px;
+  margin:0 auto;
+}
+
+.header{
+  text-align:center;
+  margin:12px 0 22px;
+}
+
+.app-name{
+  font-size:clamp(28px, 8vw, 48px);
+  line-height:1.1;
+}
+
+.version{
+  margin-top:8px;
+  font-size:clamp(13px, 3vw, 18px);
+  opacity:.6;
+}
+
+.card{
+  background:var(--panel);
+  border:1px solid var(--panel-border);
+  border-radius:24px;
+  padding:22px 20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+
+h1{
+  font-size:clamp(22px, 6vw, 34px);
+  line-height:1.25;
+  margin:0 0 18px;
+  text-align:center;
+}
+
+h2{
+  font-size:clamp(18px, 4.5vw, 26px);
+  margin:26px 0 12px;
+  padding-bottom:8px;
+  border-bottom:1px solid #333;
+}
+
+p,
+li{
+  font-size:clamp(15px, 3.8vw, 20px);
+  line-height:1.75;
+}
+
+p{
+  margin:0 0 14px;
+}
+
+ul,
+ol{
+  margin:0;
+  padding-left:1.4em;
+}
+
+.notice{
+  color:var(--muted);
+}
+
+.back-button{
+  display:block;
+  width:100%;
+  max-width:280px;
+
+  margin:28px auto 0;
+  padding:14px 18px;
+
+  border-radius:999px;
+
+  background:var(--button);
+  color:#000;
+
+  text-align:center;
+  text-decoration:none;
+
+  font-size:clamp(16px, 4vw, 22px);
+}
+
+.footer{
+  text-align:center;
+  margin-top:18px;
+  font-size:clamp(12px, 3vw, 16px);
+  opacity:.45;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <div class="app-name">🏀 GameTime</div>
+    <div class="version">Version 1.3</div>
+  </div>
+
+  <div class="card">
+
+    <h1>ご利用前に</h1>
+
+    <p>
+      このタイマーは、ホーム画面へ追加してご利用いただくことを推奨しております。
+      アプリのように開けるため、体育館や練習中でも使いやすくなります。
+    </p>
+
+    <h2>iPhoneの場合</h2>
+
+    <ol>
+      <li>SafariでGameTimeを開きます。</li>
+      <li>画面下の共有ボタンをタップします。</li>
+      <li>「ホーム画面に追加」を選択します。</li>
+      <li>追加後は、ホーム画面のアイコンから起動してください。</li>
+    </ol>
+
+    <h2>Androidの場合</h2>
+
+    <ol>
+      <li>ChromeでGameTimeを開きます。</li>
+      <li>右上のメニュー「︙」をタップします。</li>
+      <li>「ホーム画面に追加」または「アプリをインストール」を選択します。</li>
+      <li>追加後は、ホーム画面のアイコンから起動してください。</li>
+    </ol>
+
+    <h2>ご利用時のお願い</h2>
+
+    <ul>
+      <li>開始前に「📯 SOUND TEST」で音が鳴るか確認してください。</li>
+      <li>端末の音量をご確認ください。</li>
+      <li>Bluetoothイヤホン等に音が出ていないかご確認ください。</li>
+      <li>画面を表示したままご利用ください。</li>
+    </ul>
+
+    <h2>ご注意</h2>
+
+    <p class="notice">
+      画面を閉じたり、別のアプリへ移動したり、端末をロックすると、
+      タイマーや音が停止する場合があります。
+    </p>
+
+    <p class="notice">
+      端末やOSの仕様により、音が再生されない場合があります。
+      ご利用前に必ずSOUND TESTを行ってください。
+    </p>
+
+    <a class="back-button" href="index.html">
+      GameTimeへ戻る
+    </a>
+
+  </div>
+
+  <div class="footer">
+    Designed for GameTime v1.3
+  </div>
+
+</div>
+
+</body>
+</html>
