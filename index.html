@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+/>
+
+<title>GAME CLOCK</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#111111">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GameClock">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<style>
+:root{
+  --bg:#111111;
+  --panel:#181818;
+  --panel-border:#333333;
+  --text:#ffffff;
+  --muted:#aaaaaa;
+  --yellow:#ffd400;
+  --red:#ff3b30;
+  --blue:#6ecbff;
+  --navy:#132033;
+  --button:#262626;
+  --buttonBorder:#444444;
+}
+
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+
+  background:var(--bg);
+  color:var(--text);
+
+  font-family:
+    "Arial Rounded MT Bold",
+    "Hiragino Maru Gothic ProN",
+    "Rounded Mplus 1c",
+    "Yu Gothic UI",
+    "Meiryo",
+    sans-serif;
+
+  font-weight:700;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+button{
+  font-family:inherit;
+}
+
+/* =========================
+   APP
+========================= */
+
+#app{
+  width:100%;
+  height:100%;
+}
+
+.main-screen{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+}
+
+/* =========================
+   TOP
+========================= */
+
+.top{
+  min-height:7vh;
+
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+.game-count{
+  font-size:clamp(16px, 4vw, 32px);
+  letter-spacing:.08em;
+  opacity:.9;
+}
+
+/* =========================
+   CENTER
+========================= */
+
+.center{
+  flex:1;
+
+  display:flex;
+  flex-direction:column;
+
+  align-items:center;
+  justify-content:center;
+
+  min-height:0;
+}
+
+.mode{
+  font-size:clamp(20px, 5vw, 44px);
+  letter-spacing:.15em;
+
+  margin-bottom:2vh;
+}
+
+.timer{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:
+    "Arial Rounded MT Bold",
+    "Trebuchet MS",
+    sans-serif;
+
+  font-size:clamp(84px, 24vw, 240px);
+
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum";
+  font-weight:700;
+
+  width:100%;
+  max-width:100vw;
+
+  white-space:nowrap;
+  letter-spacing:0;
+
+  overflow:hidden;
+
+  transition:
+    color .25s ease,
+    transform .25s ease;
+
+  transform-origin:center center;
+  transform:translateZ(0);
+
+  margin:auto;
+}
+
+.timer.large{
+  transform:scale(1.06);
+}
+
+/* READY画面だけタイマーを小さめにする */
+.mode-ready .timer{
+  font-size:clamp(58px, 13vw, 130px);
+}
+
+@media (orientation:portrait){
+  .mode-ready .timer{
+    font-size:clamp(58px, 18vw, 120px);
+  }
+}
+
+.timer.warning{
+  color:var(--yellow);
+}
+
+.timer.danger{
+  color:var(--red);
+  animation:blink .45s infinite;
+  transform:scale(1.08);
+}
+
+/* =========================
+   BREAK MODE
+========================= */
+
+.break-mode{
+  background:var(--navy);
+}
+
+.break-mode .timer{
+  color:var(--blue);
+}
+
+/* =========================
+   FLASH
+========================= */
+
+.flash-red{
+  animation:bgFlashRed .4s infinite;
+}
+
+.flash-blue{
+  animation:bgFlashBlue .4s infinite;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.buttons{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+
+  margin-bottom:2vh;
+}
+
+button{
+  appearance:none;
+  border:none;
+
+  border-radius:999px;
+
+  padding:11px 18px;
+
+  background:var(--button);
+  color:#fff;
+
+  border:2px solid var(--buttonBorder);
+
+  font-size:clamp(14px, 2.5vw, 20px);
+  font-weight:700;
+
+  min-width:120px;
+  min-height:44px;
+
+  cursor:pointer;
+
+  transition:
+    transform .12s ease,
+    opacity .2s ease,
+    background .2s ease;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+/* =========================
+   SETUP
+========================= */
+
+.setup{
+  width:100%;
+  max-width:760px;
+
+  margin:2vh auto 0;
+
+  padding:20px;
+
+  border:1px solid var(--panel-border);
+  border-radius:22px;
+
+  background:var(--panel);
+
+  box-shadow:0 10px 30px rgba(0,0,0,.22);
+}
+
+.section{
+  margin-bottom:28px;
+}
+
+.break-section{
+  margin-top:18px;
+}
+
+.section-title{
+  font-size:clamp(15px, 3.4vw, 24px);
+
+  margin-bottom:12px;
+
+  letter-spacing:.08em;
+
+  color:#dddddd;
+  opacity:.95;
+}
+
+.option-row{
+  display:flex;
+
+  justify-content:center;
+
+  gap:10px;
+
+  flex-wrap:wrap;
+}
+
+.option-row-second{
+  margin-top:10px;
+}
+
+.option{
+  flex:0 0 auto;
+
+  min-width:56px;
+  min-height:44px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:8px 14px;
+
+  border-radius:999px;
+
+  border:2px solid #555;
+
+  background:#1d1d1d;
+
+  color:#aaa;
+
+  font-size:clamp(13px, 2.5vw, 17px);
+
+  cursor:pointer;
+
+  transition:
+    background .2s,
+    color .2s,
+    border-color .2s,
+    transform .12s;
+}
+
+.option:active{
+  transform:scale(.96);
+}
+
+.option.active{
+  background:#ffffff;
+  color:#000000;
+  border-color:#ffffff;
+}
+
+.start-button{
+  display:block;
+
+  width:100%;
+  max-width:260px;
+
+  margin:10px auto 0;
+
+  background:#ffffff;
+  color:#000000;
+
+  font-size:clamp(18px, 3.5vw, 28px);
+
+  padding:14px 24px;
+}
+
+.sound-test{
+  display:block;
+
+  width:100%;
+  max-width:220px;
+
+  margin:12px auto 0;
+
+  background:#2d2d2d;
+
+  font-size:clamp(14px, 2.8vw, 20px);
+}
+
+.count-reset{
+  display:block;
+
+  width:100%;
+  max-width:190px;
+
+  margin:12px auto 0;
+
+  background:#3b3b3b;
+
+  font-size:clamp(13px, 2.5vw, 18px);
+
+  opacity:.76;
+}
+
+.footer{
+  text-align:center;
+
+  font-size:clamp(12px, 2.8vw, 18px);
+
+  opacity:.7;
+
+  margin-top:14px;
+
+  letter-spacing:.04em;
+}
+
+.guide-link{
+  display:block;
+
+  text-align:center;
+
+  margin-top:8px;
+
+  color:#ffffff;
+
+  font-size:clamp(12px, 2.8vw, 18px);
+
+  text-decoration:underline;
+
+  opacity:.82;
+}
+
+.sound-message{
+  text-align:center;
+
+  font-size:clamp(12px, 2.8vw, 18px);
+
+  color:#dddddd;
+
+  opacity:.9;
+
+  margin-top:10px;
+
+  min-height:1.4em;
+}
+
+/* =========================
+   UTIL
+========================= */
+
+.hidden{
+  display:none !important;
+}
+
+/* =========================
+   PORTRAIT
+========================= */
+
+@media (orientation:portrait){
+
+  .main-screen{
+    padding:
+      max(18px, env(safe-area-inset-top))
+      max(18px, env(safe-area-inset-right))
+      max(18px, env(safe-area-inset-bottom))
+      max(18px, env(safe-area-inset-left));
+  }
+
+  .top{
+    min-height:6vh;
+  }
+
+  .game-count{
+    font-size:clamp(18px, 5vw, 30px);
+  }
+
+  .mode{
+    font-size:clamp(24px, 8vw, 48px);
+  }
+
+  .timer{
+    font-size:clamp(90px, 28vw, 190px);
+  }
+
+  .setup{
+    padding:22px 18px;
+    border-radius:24px;
+  }
+
+  .section{
+    margin-bottom:30px;
+  }
+
+  .option-row{
+    gap:12px;
+  }
+}
+
+/* =========================
+   LANDSCAPE
+========================= */
+
+@media (orientation:landscape){
+
+  .main-screen{
+    padding:2vh 3vw;
+  }
+
+  .top{
+    min-height:7vh;
+  }
+
+  .timer{
+    font-size:min(42vw, 46vh);
+    width:5.4ch;
+  }
+
+  .timer.large{
+    transform:scale(1.06);
+  }
+
+  .mode{
+    font-size:clamp(18px, 3vw, 36px);
+  }
+
+  .game-count{
+    font-size:clamp(14px, 2.2vw, 28px);
+  }
+
+  .setup{
+    max-width:860px;
+    padding:18px 24px;
+  }
+
+  .section{
+    margin-bottom:20px;
+  }
+
+  .section-title{
+    font-size:clamp(13px, 2vw, 22px);
+  }
+
+  .option{
+    font-size:clamp(13px, 2vw, 18px);
+  }
+
+  .footer{
+    font-size:clamp(11px, 1.5vw, 18px);
+  }
+}
+
+/* =========================
+   VERY SMALL HEIGHT
+========================= */
+
+@media (max-height:430px){
+
+  .setup{
+    padding:12px 18px;
+  }
+
+  .section{
+    margin-bottom:12px;
+  }
+
+  .section-title{
+    margin-bottom:8px;
+  }
+
+  .start-button{
+    margin-top:4px;
+    padding:10px 18px;
+  }
+
+  .sound-test,
+  .count-reset{
+    margin-top:8px;
+  }
+
+  .footer{
+    margin-top:8px;
+  }
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+@keyframes blink{
+  0%,100%{
+    opacity:1;
+  }
+
+  50%{
+    opacity:.45;
+  }
+}
+
+@keyframes bgFlashRed{
+  0%,100%{
+    background:#220000;
+  }
+
+  50%{
+    background:#660000;
+  }
+}
+
+@keyframes bgFlashBlue{
+  0%,100%{
+    background:#001b33;
+  }
+
+  50%{
+    background:#004477;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+  <div class="main-screen" id="mainScreen">
+
+    <div class="top">
+
+      <div class="game-count" id="gameCountLabel">
+        GAME 1
+      </div>
+
+    </div>
+
+    <div class="center">
+
+      <div class="mode" id="modeLabel">
+        READY
+      </div>
+
+      <div class="timer" id="timerDisplay">
+        6:00
+      </div>
+
+    </div>
+
+    <div class="buttons" id="controlButtons">
+
+      <button id="pauseBtn" class="hidden">
+        PAUSE
+      </button>
+
+      <button id="resetBtn" class="hidden">
+        RESET
+      </button>
+
+    </div>
+
+    <div class="setup" id="setupPanel">
+
+      <div class="section game-section">
+
+        <div class="section-title">
+          GAME TIME
+        </div>
+
+        <div class="option-row">
+          <div class="option" data-game="5">5</div>
+          <div class="option active" data-game="6">6</div>
+          <div class="option" data-game="7">7</div>
+        </div>
+
+        <div class="option-row option-row-second">
+          <div class="option" data-game="8">8</div>
+          <div class="option" data-game="10">10</div>
+        </div>
+
+      </div>
+
+      <div class="section break-section">
+
+        <div class="section-title">
+          BREAK TIME
+        </div>
+
+        <div class="option-row">
+          <div class="option active" data-break="2">2</div>
+          <div class="option" data-break="4">4</div>
+          <div class="option" data-break="5">5</div>
+        </div>
+
+      </div>
+
+      <button class="start-button" id="startBtn">
+        START
+      </button>
+
+      <button class="sound-test" id="soundTestBtn">
+        📯 SOUND TEST
+      </button>
+
+      <button class="count-reset" id="countResetBtn">
+        COUNT RESET
+      </button>
+
+      <div class="sound-message hidden" id="soundMessage">
+        音は聞こえましたか？
+      </div>
+
+      <div class="footer">
+        Designed for GameTime v1.3
+      </div>
+
+      <a href="guide.html" class="guide-link">
+        📖 ご利用前に
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+<audio id="warning1" src="warning1.mp3" preload="auto" playsinline></audio>
+<audio id="warning2" src="warning2.mp3" preload="auto" playsinline></audio>
+<audio id="finish" src="finish.mp3" preload="auto" playsinline></audio>
+
+<script>
+/* =========================================
+   STORAGE
+========================================= */
+
+const STORAGE_KEY = "basketball_game_clock_v13";
+
+/* =========================================
+   STATE
+========================================= */
+
+const state = {
+  mode:"READY",
+  gameMinutes:6,
+  breakMinutes:2,
+  gameCount:1,
+  remaining:360,
+  running:false,
+  timerId:null,
+  lastTick:0,
+  warning60Played:false,
+  warning15Played:false,
+  wakeLock:null,
+  audioUnlocked:false,
+  finishing:false
+};
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const timerDisplay =
+  document.getElementById("timerDisplay");
+
+const modeLabel =
+  document.getElementById("modeLabel");
+
+const gameCountLabel =
+  document.getElementById("gameCountLabel");
+
+const pauseBtn =
+  document.getElementById("pauseBtn");
+
+const resetBtn =
+  document.getElementById("resetBtn");
+
+const setupPanel =
+  document.getElementById("setupPanel");
+
+const warning1 =
+  document.getElementById("warning1");
+
+const warning2 =
+  document.getElementById("warning2");
+
+const finish =
+  document.getElementById("finish");
+
+const soundMessage =
+  document.getElementById("soundMessage");
+
+/* =========================================
+   STORAGE
+========================================= */
+
+function saveSettings(){
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      gameMinutes:state.gameMinutes,
+      breakMinutes:state.breakMinutes,
+      gameCount:state.gameCount
+    })
+  );
+}
+
+function loadSettings(){
+
+  const data =
+    localStorage.getItem(STORAGE_KEY);
+
+  if(!data) return;
+
+  try{
+
+    const parsed = JSON.parse(data);
+
+    state.gameMinutes =
+      Number(parsed.gameMinutes) || 6;
+
+    state.breakMinutes =
+      Number(parsed.breakMinutes) || 2;
+
+    state.gameCount =
+      Number(parsed.gameCount) || 1;
+
+  }catch(e){}
+}
+
+/* =========================================
+   AUDIO
+========================================= */
+
+function safePlay(audio, volume = 1){
+
+  if(!audio) return;
+
+  audio.pause();
+  audio.currentTime = 0;
+  audio.volume = volume;
+
+  const playPromise = audio.play();
+
+  if(playPromise && playPromise.catch){
+
+    playPromise.catch(()=>{});
+  }
+}
+
+async function unlockAudio(){
+
+  if(state.audioUnlocked) return true;
+
+  /*
+    START時は開始音だけを鳴らすため、
+    ここでは音声ファイルを再生しません。
+  */
+
+  state.audioUnlocked = true;
+
+  return true;
+}
+
+async function playSoundTest(){
+
+  await unlockAudio();
+
+  safePlay(warning2, 1);
+
+  soundMessage.classList.remove("hidden");
+
+  clearTimeout(playSoundTest.messageTimer);
+
+  playSoundTest.messageTimer =
+    setTimeout(()=>{
+
+      soundMessage.classList.add("hidden");
+
+    },4000);
+}
+
+/* =========================================
+   WAKE LOCK
+========================================= */
+
+async function requestWakeLock(){
+
+  if(!("wakeLock" in navigator)) return;
+
+  try{
+
+    state.wakeLock =
+      await navigator.wakeLock.request("screen");
+
+  }catch(e){}
+}
+
+async function releaseWakeLock(){
+
+  if(!state.wakeLock) return;
+
+  try{
+
+    await state.wakeLock.release();
+
+  }catch(e){}
+
+  state.wakeLock = null;
+}
+
+document.addEventListener(
+  "visibilitychange",
+  async ()=>{
+
+    if(
+      !document.hidden &&
+      state.running
+    ){
+
+      await requestWakeLock();
+
+      state.lastTick =
+        performance.now();
+    }
+  }
+);
+
+/* =========================================
+   OPTION UI
+========================================= */
+
+function updateOptionUI(){
+
+  document
+    .querySelectorAll("[data-game]")
+    .forEach(el=>{
+
+      el.classList.toggle(
+        "active",
+        Number(el.dataset.game) === state.gameMinutes
+      );
+    });
+
+  document
+    .querySelectorAll("[data-break]")
+    .forEach(el=>{
+
+      el.classList.toggle(
+        "active",
+        Number(el.dataset.break) === state.breakMinutes
+      );
+    });
+
+  gameCountLabel.textContent =
+    `GAME ${state.gameCount}`;
+
+  if(state.mode === "READY"){
+
+    timerDisplay.textContent =
+      formatTime(
+        state.gameMinutes * 60
+      );
+  }
+}
+
+/* =========================================
+   FORMAT
+========================================= */
+
+function formatTime(sec){
+
+  const safeSec =
+    Math.max(0, sec);
+
+  if(safeSec <= 60){
+
+    return safeSec.toFixed(1);
+  }
+
+  const m =
+    Math.floor(safeSec / 60);
+
+  const s =
+    Math.floor(safeSec % 60);
+
+  return `${m}:${String(s).padStart(2,"0")}`;
+}
+
+/* =========================================
+   DISPLAY
+========================================= */
+
+function updateDisplay(){
+
+  timerDisplay.className = "timer";
+
+  if(state.remaining <= 60){
+
+    timerDisplay.classList.add("large");
+  }
+
+  document.body.classList.toggle(
+    "mode-ready",
+    state.mode === "READY"
+  );
+
+  document.body.classList.toggle(
+    "break-mode",
+    state.mode === "BREAK"
+  );
+
+  if(state.mode === "GAME"){
+
+    if(state.remaining <= 60){
+
+      timerDisplay.classList.add("warning");
+    }
+
+    if(state.remaining <= 15){
+
+      timerDisplay.classList.remove("warning");
+      timerDisplay.classList.add("danger");
+    }
+  }
+
+  timerDisplay.textContent =
+    formatTime(state.remaining);
+}
+
+/* =========================================
+   MODE
+========================================= */
+
+async function startGame(){
+
+  await unlockAudio();
+  await requestWakeLock();
+
+  clearInterval(state.timerId);
+
+  state.mode = "GAME";
+
+  state.remaining =
+    state.gameMinutes * 60;
+
+  state.running = false;
+  state.finishing = false;
+
+  state.warning60Played = false;
+  state.warning15Played = false;
+
+  modeLabel.textContent = "GAME";
+  modeLabel.style.display = "none";
+
+  setupPanel.classList.add("hidden");
+
+  pauseBtn.classList.remove("hidden");
+  resetBtn.classList.remove("hidden");
+
+  pauseBtn.textContent = "PAUSE";
+
+  updateDisplay();
+
+  safePlay(warning2, 0.5);
+
+  setTimeout(()=>{
+
+    runTimer();
+
+  },300);
+}
+
+function startBreak(){
+
+  clearInterval(state.timerId);
+
+  state.mode = "BREAK";
+
+  state.remaining =
+    state.breakMinutes * 60;
+
+  state.running = false;
+  state.finishing = false;
+
+  modeLabel.textContent = "BREAK";
+  modeLabel.style.display = "none";
+
+  updateDisplay();
+
+  runTimer();
+}
+
+async function returnReady(){
+
+  clearInterval(state.timerId);
+
+  state.mode = "READY";
+  state.running = false;
+  state.finishing = false;
+
+  state.remaining =
+    state.gameMinutes * 60;
+
+  pauseBtn.classList.add("hidden");
+  resetBtn.classList.add("hidden");
+
+  setupPanel.classList.remove("hidden");
+
+  modeLabel.style.display = "block";
+  modeLabel.textContent = "READY";
+
+  document.body.classList.remove(
+    "break-mode",
+    "flash-red",
+    "flash-blue"
+  );
+
+  pauseBtn.textContent = "PAUSE";
+
+  updateDisplay();
+  updateOptionUI();
+  saveSettings();
+
+  await releaseWakeLock();
+}
+
+/* =========================================
+   TIMER
+========================================= */
+
+function runTimer(){
+
+  clearInterval(state.timerId);
+
+  state.running = true;
+  state.finishing = false;
+
+  state.lastTick =
+    performance.now();
+
+  state.timerId = setInterval(()=>{
+
+    if(!state.running) return;
+
+    const now =
+      performance.now();
+
+    const delta =
+      (now - state.lastTick) / 1000;
+
+    state.lastTick =
+      now;
+
+    state.remaining -= delta;
+
+    if(
+      state.mode === "GAME" &&
+      state.remaining <= 60 &&
+      !state.warning60Played
+    ){
+
+      safePlay(warning1);
+      state.warning60Played = true;
+    }
+
+    if(
+      state.mode === "GAME" &&
+      state.remaining <= 15 &&
+      !state.warning15Played
+    ){
+
+      safePlay(warning1);
+      state.warning15Played = true;
+    }
+
+    if(state.remaining <= 0){
+
+      state.remaining = 0;
+
+      updateDisplay();
+
+      clearInterval(state.timerId);
+
+      state.running = false;
+
+      handleFinish();
+
+      return;
+    }
+
+    updateDisplay();
+
+  },100);
+}
+
+/* =========================================
+   FINISH
+========================================= */
+
+function handleFinish(){
+
+  if(state.finishing) return;
+
+  state.finishing = true;
+
+  safePlay(finish);
+
+  if(state.mode === "GAME"){
+
+    state.gameCount++;
+
+    saveSettings();
+
+    modeLabel.style.display = "block";
+    modeLabel.textContent = "GAME SET";
+
+    document.body.classList.add("flash-red");
+
+    timerDisplay.textContent = "0.0";
+
+    setTimeout(()=>{
+
+      document.body.classList.remove("flash-red");
+
+      gameCountLabel.textContent =
+        `GAME ${state.gameCount}`;
+
+      startBreak();
+
+    },2000);
+
+    return;
+  }
+
+  if(state.mode === "BREAK"){
+
+    modeLabel.style.display = "block";
+    modeLabel.textContent = "READY?";
+
+    document.body.classList.add("flash-blue");
+
+    timerDisplay.textContent = "0.0";
+
+    setTimeout(()=>{
+
+      document.body.classList.remove("flash-blue");
+
+      returnReady();
+
+    },2000);
+  }
+}
+
+/* =========================================
+   EVENTS
+========================================= */
+
+pauseBtn.addEventListener("click",async ()=>{
+
+  if(!state.running){
+
+    await requestWakeLock();
+
+    runTimer();
+
+    pauseBtn.textContent = "PAUSE";
+
+    return;
+  }
+
+  clearInterval(state.timerId);
+
+  state.running = false;
+
+  pauseBtn.textContent = "RESUME";
+});
+
+resetBtn.addEventListener("click",()=>{
+
+  const ok =
+    confirm("READYへ戻しますか？");
+
+  if(!ok) return;
+
+  returnReady();
+});
+
+document
+  .getElementById("startBtn")
+  .addEventListener("click",()=>{
+
+    startGame();
+  });
+
+document
+  .getElementById("soundTestBtn")
+  .addEventListener("click",()=>{
+
+    playSoundTest();
+  });
+
+document
+  .getElementById("countResetBtn")
+  .addEventListener("click",()=>{
+
+    const ok =
+      confirm("GAME COUNT をリセットしますか？");
+
+    if(!ok) return;
+
+    state.gameCount = 1;
+
+    saveSettings();
+
+    updateOptionUI();
+  });
+
+document
+  .querySelectorAll("[data-game]")
+  .forEach(el=>{
+
+    el.addEventListener("click",()=>{
+
+      state.gameMinutes =
+        Number(el.dataset.game);
+
+      state.remaining =
+        state.gameMinutes * 60;
+
+      saveSettings();
+      updateOptionUI();
+      updateDisplay();
+    });
+  });
+
+document
+  .querySelectorAll("[data-break]")
+  .forEach(el=>{
+
+    el.addEventListener("click",()=>{
+
+      state.breakMinutes =
+        Number(el.dataset.break);
+
+      saveSettings();
+      updateOptionUI();
+    });
+  });
+
+/* =========================================
+   INIT
+========================================= */
+
+loadSettings();
+
+state.remaining =
+  state.gameMinutes * 60;
+
+updateOptionUI();
+updateDisplay();
+
+/* =========================================
+   SERVICE WORKER
+========================================= */
+
+if("serviceWorker" in navigator){
+
+  navigator.serviceWorker
+    .register("./sw.js")
+    .catch(()=>{});
+}
+</script>
+
+</body>
+</html>
